@@ -1,3 +1,5 @@
+# Ignoring the visual environment
 venv/
 
+#Ignoring config settings related to the ide.
 .idea/
