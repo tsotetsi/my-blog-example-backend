@@ -1,7 +1,7 @@
 import datetime
 import sqlite3
 
-from flask import Flask, request, Response
+from flask import Flask, request, Response, render_template
 
 from flask_cors import CORS
 
@@ -23,6 +23,12 @@ init_sqlite_database()
 
 app = Flask(__name__)
 CORS(app)
+
+
+@app.route('/')
+@app.route('/index')
+def show_index_page():
+    return render_template('index.html')
 
 
 @app.route('/add-new-post/', methods=["POST"])
