@@ -13,8 +13,9 @@ def init_sqlite_database():
     conn = sqlite3.connect(_database_name)
     print("Opened database successfully")
 
+    # Create a table called "post" which we will use to store our blog posts.
     conn.execute('CREATE TABLE IF NOT EXISTS post (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, author TEXT, date TEXT)')
-    print("Table created successfully")
+    print("'post'" + " table created successfully")
     conn.close()
 
 
@@ -39,10 +40,9 @@ def add_new_post():
         description = request.form['description']
         author= request.form['author']
 
-        msg = None
+        # Create a response dictionary which will have all the necessary info we need.
         response = {
-            'data': [],
-            'msg': msg,
+            'msg': None,
             'status_code': ''
         }
         try:
@@ -50,9 +50,10 @@ def add_new_post():
                 cursor = connection.cursor()
                 cursor.execute("INSERT INTO post (title, description, author, date) VALUES (?, ?, ?, ?)", (title, description, author, datetime.datetime.now()))
                 connection.commit()
-                msg = "Blog post added successfully."
-                response['msg'] = msg
+
+                response['msg'] = "Blog post added successfully."
                 response['status_code'] = Response().status_code
+
         except Exception as e:
             connection.rollback()
             response['msg'] = "Error occurred while inserting information in the database." + str(e)
@@ -66,12 +67,11 @@ def add_new_post():
 def get_all_post():
 
     if request.method == "POST" or request.method == "GET":
-        msg = None
 
         # Create a dictionary which will have all the information we need.
         response = {
             'data': [],
-            'msg': msg,
+            'msg': None,
             'status_code': ''
         }
         try:
@@ -82,12 +82,12 @@ def get_all_post():
 
                 # Add everything inside the response dictionary.
                 response['data'] = cursor.fetchall()
-                response['msg'] = "Blog Posts were retrieved successfully"
+                response['msg'] = "Blog Posts were retrieved successfully from the database"
                 response['status_code'] = Response().status_code
 
         except Exception as e:
             connection.rollback()
-            response['msg'] = "Error occurred while retrieving information in the database: " + str(e)
+            response['msg'] = "Error occurred while retrieving blog posts in the database: " + str(e)
             response['status_code'] = Response().status_code
         finally:
             connection.close()
