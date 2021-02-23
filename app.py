@@ -11,11 +11,11 @@ _database_name = 'blog-post.db'
 
 def init_sqlite_database():
     conn = sqlite3.connect(_database_name)
-    print("Opened database successfully")
+    print("The database was opened successfully...")
 
     # Create a table called "post" which we will use to store our blog posts.
     conn.execute('CREATE TABLE IF NOT EXISTS post (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, author TEXT, date TEXT)')
-    print("'post'" + " table created successfully")
+    print("'post'" + " table was created successfully...")
     conn.close()
 
 
