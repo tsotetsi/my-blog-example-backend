@@ -1,7 +1,7 @@
 import datetime
 import sqlite3
 
-from flask import Flask, request, Response, render_template
+from flask import Flask, request, Response, render_template, jsonify
 
 from flask_cors import CORS
 
@@ -17,6 +17,13 @@ def init_sqlite_database():
     conn.execute('CREATE TABLE IF NOT EXISTS post (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, author TEXT, date TEXT)')
     print("'post'" + " table was created successfully...")
     conn.close()
+
+
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
 
 
 init_sqlite_database()
@@ -38,7 +45,7 @@ def add_new_post():
     if request.method == "POST":
         title = request.form['title']
         description = request.form['description']
-        author= request.form['author']
+        author = request.form['author']
 
         # Create a response dictionary which will have all the necessary info we need.
         response = {
@@ -77,13 +84,17 @@ def get_all_post():
         try:
             with sqlite3.connect(_database_name) as connection:
                 # Connect to the database and select all the blog post that are in the db.
+                connection.row_factory = dict_factory
                 cursor = connection.cursor()
                 cursor.execute("SELECT * FROM post")
 
-                # Add everything inside the response dictionary.
-                response['data'] = cursor.fetchall()
+                # Fetch data from the database.
+                data = cursor.fetchall()
+
+                # Add everything inside the response dictionary for easy accessibility.
                 response['msg'] = "Blog Posts were retrieved successfully from the database"
                 response['status_code'] = Response().status_code
+                response['data'] = data
 
         except Exception as e:
             connection.rollback()
